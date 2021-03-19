@@ -9,6 +9,7 @@ AccuCor2 accepts Excel (.xls and .xlsx) files.
 Download [R](https://www.r-project.org/) to install accucor2.
 
 ```R
+# Please make sure all the required packages are updated.
 install.packages("devtools")
 library(devtools)
 devtools::install_github("wangyujue23/AccuCor2")
