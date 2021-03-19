@@ -28,9 +28,12 @@ input_file <- system.file("extdata", "CN_Compound_Test.xlsx", package = "accucor
 sheet_name <- "Sheet1"
 metabolite_list <-system.file("extdata", "Metabolite Formula and Charge Info.csv", package = "accucor2")
 
-# Output is written into [input_file].xlsx by default with additional sheets
 # Be sure to specify the appropriate resolution.
 # For Exactive, the resolution is 70000, defined at 200 Mw
+# Output is written into "corrected.xlsx" under the directory folder by default (a message will show you where it is)
+# The results are also returned as a named list of dataframes for further processing in R
+# "Original", "Corrected", "Normalized", "Pool size"
+
 corrected <- dual_correction(input_file,sheet_name,metabolite_list,"CN",Resolution = 70000)
 
 corrected
@@ -48,15 +51,7 @@ metabolite_list <-system.file("extdata", "Metabolite Formula and Charge Info.csv
 
 corrected <- dual_correction(input_file,sheet_name,metabolite_list,"CH",C13Purity = 1, H2N15Purity = 1, Resolution = 750000,NitrogenNaturalAbundance = c(0.99632, 0.00368),SulfurNaturalAbundance = c(0.9493, 0.0076, 0.0431))
 
-
-
-# The results are also returned as a named list of dataframes for further processing in R
-# "Original", "Corrected", "Normalized", "Pool size",
-
 corrected
-
-
-
 
 ```
 
