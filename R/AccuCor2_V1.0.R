@@ -552,11 +552,11 @@ dual_correction <- function(InputFile,
                            "Normalized" = OutputPercentageDF,
                            "Pool size" = OutputPoolAfterDF)
   
-  xlsx::write.xlsx2(InputDF, file=paste("Corrected",InputFile,sep = "_"), sheetName = "Original", row.names=FALSE, append=TRUE)
-  xlsx::write.xlsx2(OutputDF, file=paste("Corrected",InputFile,sep = "_"), sheetName = "Corrected", row.names=FALSE, append=TRUE)
-  xlsx::write.xlsx2(OutputPercentageDF, file=paste("Corrected",InputFile,sep = "_"), sheetName = "Normalized", row.names=FALSE, append=TRUE)
-  xlsx::write.xlsx2(OutputPoolAfterDF, file=paste("Corrected",InputFile,sep = "_"), sheetName = "Pool Size", row.names=FALSE, append=TRUE)
-  
+  xlsx::write.xlsx2(InputDF, "Corrected.xlsx", sheetName = "Original", row.names=FALSE, append=TRUE)
+  xlsx::write.xlsx2(OutputDF, "Corrected.xlsx", sheetName = "Corrected", row.names=FALSE, append=TRUE)
+  xlsx::write.xlsx2(OutputPercentageDF, "Corrected.xlsx", sheetName = "Normalized", row.names=FALSE, append=TRUE)
+  xlsx::write.xlsx2(OutputPoolAfterDF, "Corrected.xlsx", sheetName = "Pool Size", row.names=FALSE, append=TRUE)
+  print(paste("Correction is sussessful, the result is saved in ",getwd(),"/Corrected.xlsx",sep = ""))
   return(OutputDataFrames)
 }
 
