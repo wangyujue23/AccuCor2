@@ -441,7 +441,7 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
 #' @param H2N15Purity default:0.99. The isotopic purity for H2/N15 tracer. 
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
 #' @param ReportPoolSize default: TRUE
-#' @import xlsx
+#' @importFrom xlsx "read.xlsx"
 #' @import gsubfn
 #' @import nnls
 #' @import dplyr
@@ -553,9 +553,23 @@ dual_correction <- function(InputFile,
   names(OutputPercentageDF) <- names(OutputDF)
   names(OutputPoolBeforeDF) <- c("Compound", names(InputDF)[6:(length(names(InputDF)))])
   names(OutputPoolAfterDF) <- c("Compound", names(InputDF)[6:(length(names(InputDF)))])
-  write.xlsx2(OutputDF, file=InputFile, sheetName = "Corrected", row.names=FALSE, append=TRUE)
-  write.xlsx2(OutputPercentageDF, file=InputFile, sheetName = "Normalized", row.names=FALSE, append=TRUE)
-  write.xlsx2(OutputPoolAfterDF, file=InputFile, sheetName = "Pool Size", row.names=FALSE, append=TRUE)
+  
+  
+  OutputDataFrames <- list("Original" = InputDF,
+                           "Corrected" = OutputDF,
+                           "Normalized" = OutputPercentageDF,
+                           "Pool size" = OutputPoolAfterDF)
+  
+  if(!identical(FALSE, output_base)) {
+    if(is.null(output_base)) {
+      output_base = path
+    }
+    write.xlsx2(OutputDF, file=InputFile, sheetName = "Corrected", row.names=FALSE, append=TRUE)
+    write.xlsx2(OutputPercentageDF, file=InputFile, sheetName = "Normalized", row.names=FALSE, append=TRUE)
+    write.xlsx2(OutputPoolAfterDF, file=InputFile, sheetName = "Pool Size", row.names=FALSE, append=TRUE)
+  }
+  
+  return(OutputDataFrames)
 }
 
 
