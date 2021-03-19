@@ -45,7 +45,7 @@ metabolite_list <-system.file("extdata", "Metabolite Formula and Charge Info.csv
 # The default value for tracer C/H/N isotopic purity is 0.99, you could change them by specify the value of C13Purity and H2N15Purity.
 # You could also specify the natual abundance value. In this example, the NitrogenNaturalAbundace (14N, 15N) and SulfurNaturalAbundace (32S, 33S, 34S) are specified.
 
-corrected <- dual_correction(input_file,sheet_name,metabolite_list,"CH",C13Purity = 1, H2N15Purity = 1, Resolution = 750000,NitrogenNaturalAbundace = c(0.99632, 0.00368),SulfurNaturalAbundace = c(0.9493, 0.0076, 0.0431))
+corrected <- dual_correction(input_file,sheet_name,metabolite_list,"CH",C13Purity = 1, H2N15Purity = 1, Resolution = 750000,NitrogenNaturalAbundance = c(0.99632, 0.00368),SulfurNaturalAbundance = c(0.9493, 0.0076, 0.0431))
 
 
 
