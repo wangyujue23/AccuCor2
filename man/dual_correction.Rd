@@ -11,12 +11,12 @@ dual_correction(
   Isotopes,
   Resolution = 1e+05,
   Autofill = F,
-  CarbonNaturalAbundace = c(0.9893, 0.0107),
-  HydrogenNaturalAbundace = c(0.999885, 0.000115),
-  NitrogenNaturalAbundace = c(0.99636, 0.00364),
+  CarbonNaturalAbundance = c(0.9893, 0.0107),
+  HydrogenNaturalAbundance = c(0.999885, 0.000115),
+  NitrogenNaturalAbundance = c(0.99636, 0.00364),
   OxygenNaturalAbundace = c(0.99757, 0.00038, 0.00205),
-  SulfurNaturalAbundace = c(0.95, 0.0075, 0.0425),
-  SiliconNaturalAbundace = c(0.92223, 0.04685, 0.03092),
+  SulfurNaturalAbundance = c(0.95, 0.0075, 0.0425),
+  SiliconNaturalAbundance = c(0.92223, 0.04685, 0.03092),
   ChlorineNaturalAbundance = c(0.7576, 0.2424),
   BromineNaturalAbundance = c(0.5069, 0.4931),
   C13Purity = 0.99,
@@ -37,6 +37,20 @@ dual_correction(
 \item{Resolution}{For Exactive, the Resolution is 100000, defined at Mw 200}
 
 \item{Autofill}{default: FALSE. If the intensity of an isotopologue is not provided, should 0 be assumed?}
+
+\item{CarbonNaturalAbundance}{vector of C Natural Abundance in the order of (12C,13C)}
+
+\item{HydrogenNaturalAbundance}{vector of H Natural Abundance in the order of (1H,2H)}
+
+\item{NitrogenNaturalAbundance}{vector of N Natural Abundance in the order of (14N,15N)}
+
+\item{SulfurNaturalAbundance}{vector of S Natural Abundance in the order of (32S,33S,34S)}
+
+\item{SiliconNaturalAbundance}{vector of Si Natural Abundance in the order of (28Si,29Si,30Si)}
+
+\item{ChlorineNaturalAbundance}{vector of Cl Natural Abundance in the order of (35Cl,37Cl)}
+
+\item{BromineNaturalAbundance}{vector of Br Natural Abundance in the order of (79Br,81Br)}
 
 \item{C13Purity}{default:0.99.The isotopic purity for C13 tracer.}
 

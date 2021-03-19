@@ -5,31 +5,31 @@
 #' @param label matrix that contains the number of isotopes (C followed by H) associated with the observed mass fractions
 #' @param Resolution For Exactive, the Resolution is 100000, defined at Mw 200
 #' @param Autofill default: FALSE. If the intensity of an isotopologue is not provided, should 0 be assumed?
-#' @param CarbonNaturalAbundace
-#' @param HydrogenNaturalAbundace
-#' @param NitrogenNaturalAbundace
-#' @param SulfurNaturalAbundace
-#' @param SiliconNaturalAbundace
-#' @param ChlorineNaturalAbundance
-#' @param BromineNaturalAbundance
+#' @param CarbonNaturalAbundance vector of C Natural Abundance in the order of (12C,13C)
+#' @param HydrogenNaturalAbundance vector of H Natural Abundance in the order of (1H,2H)
+#' @param NitrogenNaturalAbundance vector of N Natural Abundance in the order of (14N,15N)
+#' @param SulfurNaturalAbundance vector of S Natural Abundance in the order of (32S,33S,34S)
+#' @param SiliconNaturalAbundance vector of Si Natural Abundance in the order of (28Si,29Si,30Si)
+#' @param ChlorineNaturalAbundance vector of Cl Natural Abundance in the order of (35Cl,37Cl)
+#' @param BromineNaturalAbundance vector of Br Natural Abundance in the order of (79Br,81Br)
 #' @param C13Purity default:0.99.The isotopic purity for C13 tracer.
 #' @param H2N15Purity default:0.99. The isotopic purity for H2/N15 tracer. 
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
 #' @param ReportPoolSize default: TRUE
-#' @importfrom nnls "nnls"
-#' @importfrom CHNOSZ "makeup"
-#' @importfrom stats "dbinom" "dmultinom" "coef"
+#' @importFrom nnls "nnls"
+#' @importFrom CHNOSZ "makeup"
+#' @importFrom stats "dbinom" "dmultinom" "coef"
 #' @importFrom dplyr "%>%" "mutate" "filter"
 #' @return matrix of labeling pattern after the correction
 CH_Correction <- function(formula, datamatrix, label, Resolution, 
                           Autofill = F, 
                           Charge = -1,
-                          CarbonNaturalAbundace = c(0.9893, 0.0107),
-                          HydrogenNaturalAbundace = c(0.999885, 0.000115),
-                          NitrogenNaturalAbundace = c(0.99636, 0.00364),
+                          CarbonNaturalAbundance = c(0.9893, 0.0107),
+                          HydrogenNaturalAbundance = c(0.999885, 0.000115),
+                          NitrogenNaturalAbundance = c(0.99636, 0.00364),
                           OxygenNaturalAbundace = c(0.99757, 0.00038, 0.00205),
-                          SulfurNaturalAbundace = c(0.95, 0.0075, 0.0425),
-                          SiliconNaturalAbundace = c(0.92223, 0.04685, 0.03092),
+                          SulfurNaturalAbundance = c(0.95, 0.0075, 0.0425),
+                          SiliconNaturalAbundance = c(0.92223, 0.04685, 0.03092),
                           ChlorineNaturalAbundance = c(0.7576,0.2424),
                           BromineNaturalAbundance = c(0.5069,0.4931),
                           C13Purity = 0.99,
@@ -89,10 +89,10 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
     CMatrix <- diag((AtomNumber["C"]+1))
     HMatrix <- diag((AtomNumber["H"]+1))
     for(i in 1:(AtomNumber["C"]+1)){
-      CMatrix[,i] <- sapply(0:AtomNumber["C"], function(x) stats::dbinom(x-i+1, AtomNumber["C"]-i+1 , CarbonNaturalAbundace[2]))
+      CMatrix[,i] <- sapply(0:AtomNumber["C"], function(x) stats::dbinom(x-i+1, AtomNumber["C"]-i+1 , CarbonNaturalAbundance[2]))
     }
     for(i in 1:(AtomNumber["H"]+1)){
-      HMatrix[,i] <- sapply(0:AtomNumber["H"], function(x) stats::dbinom(x-i+1, AtomNumber["H"]-i+1 , HydrogenNaturalAbundace[2]))
+      HMatrix[,i] <- sapply(0:AtomNumber["H"], function(x) stats::dbinom(x-i+1, AtomNumber["H"]-i+1 , HydrogenNaturalAbundance[2]))
     }
     for(m in 1:(AtomNumber["H"]+1)){
       for (n in 1:m){
@@ -141,10 +141,10 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
       Current.Combinations<-Isotope.Combinations1%>%dplyr::filter(C13==Cindex & H2==Hindex)
       if (nrow(Current.Combinations)!=0){
         for (i in 1:nrow(Current.Combinations)){
-          p <- stats::dbinom(Current.Combinations[i,3], AtomNumber["N"], NitrogenNaturalAbundace[2])*
+          p <- stats::dbinom(Current.Combinations[i,3], AtomNumber["N"], NitrogenNaturalAbundance[2])*
             stats::dmultinom(unlist(c(AtomNumber["O"]-sum(Current.Combinations[i,4:5]),Current.Combinations[i,4:5])), AtomNumber["O"], OxygenNaturalAbundace)*
-            stats::dmultinom(unlist(c(AtomNumber["S"]-sum(Current.Combinations[i,6:7]),Current.Combinations[i,6:7])), AtomNumber["S"], SulfurNaturalAbundace)*
-            stats::dmultinom(unlist(c(AtomNumber["Si"]-sum(Current.Combinations[i,8:9]),Current.Combinations[i,8:9])), AtomNumber["Si"], SiliconNaturalAbundace)*
+            stats::dmultinom(unlist(c(AtomNumber["S"]-sum(Current.Combinations[i,6:7]),Current.Combinations[i,6:7])), AtomNumber["S"], SulfurNaturalAbundance)*
+            stats::dmultinom(unlist(c(AtomNumber["Si"]-sum(Current.Combinations[i,8:9]),Current.Combinations[i,8:9])), AtomNumber["Si"], SiliconNaturalAbundance)*
             stats::dbinom(Current.Combinations[i,10], AtomNumber["Cl"], ChlorineNaturalAbundance[2])*
             stats::dbinom(Current.Combinations[i,11], AtomNumber["Br"], BromineNaturalAbundance[2])
           for (n in m:nrow(NonTracerMatrix)){
@@ -161,10 +161,10 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
       for (i in 1:nrow(Current.Combinations)){
         Cindex<- Current.Combinations[i,1]
         Hindex<- Current.Combinations[i,2]
-        p <- stats::dbinom(Current.Combinations[i,3], AtomNumber["N"], NitrogenNaturalAbundace[2])*
+        p <- stats::dbinom(Current.Combinations[i,3], AtomNumber["N"], NitrogenNaturalAbundance[2])*
           stats::dmultinom(unlist(c(AtomNumber["O"]-sum(Current.Combinations[i,4:5]),Current.Combinations[i,4:5])), AtomNumber["O"], OxygenNaturalAbundace)*
-          stats::dmultinom(unlist(c(AtomNumber["S"]-sum(Current.Combinations[i,6:7]),Current.Combinations[i,6:7])), AtomNumber["S"], SulfurNaturalAbundace)*
-          stats::dmultinom(unlist(c(AtomNumber["Si"]-sum(Current.Combinations[i,8:9]),Current.Combinations[i,8:9])), AtomNumber["Si"], SiliconNaturalAbundace)*
+          stats::dmultinom(unlist(c(AtomNumber["S"]-sum(Current.Combinations[i,6:7]),Current.Combinations[i,6:7])), AtomNumber["S"], SulfurNaturalAbundance)*
+          stats::dmultinom(unlist(c(AtomNumber["Si"]-sum(Current.Combinations[i,8:9]),Current.Combinations[i,8:9])), AtomNumber["Si"], SiliconNaturalAbundance)*
           stats::dbinom(Current.Combinations[i,10], AtomNumber["Cl"], ChlorineNaturalAbundance[2])*
           stats::dbinom(Current.Combinations[i,11], AtomNumber["Br"], BromineNaturalAbundance[2])
         if (Cindex<Hindex){
@@ -211,34 +211,34 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
 #'
 #' @param formula string describing the chemical formula of the metabolite (in neutral form)
 #' @param datamatrix matrix that contains the observed mass fractions
-#' @param label matrix that contains the number of isotopes (C followed by N) associated with the observed mass fractions
+#' @param label matrix that contains the number of isotopes (C followed by H) associated with the observed mass fractions
 #' @param Resolution For Exactive, the Resolution is 100000, defined at Mw 200
 #' @param Autofill default: FALSE. If the intensity of an isotopologue is not provided, should 0 be assumed?
-#' @param CarbonNaturalAbundace
-#' @param HydrogenNaturalAbundace
-#' @param NitrogenNaturalAbundace
-#' @param SulfurNaturalAbundace
-#' @param SiliconNaturalAbundace
-#' @param ChlorineNaturalAbundance
-#' @param BromineNaturalAbundance
+#' @param CarbonNaturalAbundance vector of C Natural Abundance in the order of (12C,13C)
+#' @param HydrogenNaturalAbundance vector of H Natural Abundance in the order of (1H,2H)
+#' @param NitrogenNaturalAbundance vector of N Natural Abundance in the order of (14N,15N)
+#' @param SulfurNaturalAbundance vector of S Natural Abundance in the order of (32S,33S,34S)
+#' @param SiliconNaturalAbundance vector of Si Natural Abundance in the order of (28Si,29Si,30Si)
+#' @param ChlorineNaturalAbundance vector of Cl Natural Abundance in the order of (35Cl,37Cl)
+#' @param BromineNaturalAbundance vector of Br Natural Abundance in the order of (79Br,81Br)
 #' @param C13Purity default:0.99.The isotopic purity for C13 tracer.
 #' @param H2N15Purity default:0.99. The isotopic purity for H2/N15 tracer. 
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
 #' @param ReportPoolSize default: TRUE
-#' @importfrom nnls "nnls"
-#' @importfrom CHNOSZ "makeup"
-#' @importfrom stats "dbinom" "dmultinom" "coef"
+#' @importFrom nnls "nnls"
+#' @importFrom CHNOSZ "makeup"
+#' @importFrom stats "dbinom" "dmultinom" "coef"
 #' @importFrom dplyr "%>%" "mutate" "filter"
 #' @return matrix of labeling pattern after the correction
 CN_Correction <- function(formula, datamatrix, label, Resolution, 
                           Autofill = F, 
                           Charge = -1,
-                          CarbonNaturalAbundace = c(0.9893, 0.0107),
-                          HydrogenNaturalAbundace = c(0.999885, 0.000115),
-                          NitrogenNaturalAbundace = c(0.99636, 0.00364),
+                          CarbonNaturalAbundance = c(0.9893, 0.0107),
+                          HydrogenNaturalAbundance = c(0.999885, 0.000115),
+                          NitrogenNaturalAbundance = c(0.99636, 0.00364),
                           OxygenNaturalAbundace = c(0.99757, 0.00038, 0.00205),
-                          SulfurNaturalAbundace = c(0.95, 0.0075, 0.0425),
-                          SiliconNaturalAbundace = c(0.92223, 0.04685, 0.03092),
+                          SulfurNaturalAbundance = c(0.95, 0.0075, 0.0425),
+                          SiliconNaturalAbundance = c(0.92223, 0.04685, 0.03092),
                           ChlorineNaturalAbundance = c(0.7576,0.2424),
                           BromineNaturalAbundance = c(0.5069,0.4931),
                           C13Purity = 0.99,
@@ -298,10 +298,10 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
     CMatrix <- diag((AtomNumber["C"]+1))
     NMatrix <- diag((AtomNumber["N"]+1))
     for(i in 1:(AtomNumber["C"]+1)){
-      CMatrix[,i] <- sapply(0:AtomNumber["C"], function(x) stats::dbinom(x-i+1, AtomNumber["C"]-i+1 , CarbonNaturalAbundace[2]))
+      CMatrix[,i] <- sapply(0:AtomNumber["C"], function(x) stats::dbinom(x-i+1, AtomNumber["C"]-i+1 , CarbonNaturalAbundance[2]))
     }
     for(i in 1:(AtomNumber["N"]+1)){
-      NMatrix[,i] <- sapply(0:AtomNumber["N"], function(x) stats::dbinom(x-i+1, AtomNumber["N"]-i+1 , NitrogenNaturalAbundace[2]))
+      NMatrix[,i] <- sapply(0:AtomNumber["N"], function(x) stats::dbinom(x-i+1, AtomNumber["N"]-i+1 , NitrogenNaturalAbundance[2]))
     }
     for(m in 1:(AtomNumber["N"]+1)){
       for (n in 1:m){
@@ -350,10 +350,10 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
       Current.Combinations<-Isotope.Combinations1%>%dplyr::filter(C13==Cindex & N15==Nindex)
       if (nrow(Current.Combinations)!=0){
         for (i in 1:nrow(Current.Combinations)){
-          p <- stats::dbinom(Current.Combinations[i,3], AtomNumber["H"], HydrogenNaturalAbundace[2])*
+          p <- stats::dbinom(Current.Combinations[i,3], AtomNumber["H"], HydrogenNaturalAbundance[2])*
             stats::dmultinom(unlist(c(AtomNumber["O"]-sum(Current.Combinations[i,4:5]),Current.Combinations[i,4:5])), AtomNumber["O"], OxygenNaturalAbundace)*
-            stats::dmultinom(unlist(c(AtomNumber["S"]-sum(Current.Combinations[i,6:7]),Current.Combinations[i,6:7])), AtomNumber["S"], SulfurNaturalAbundace)*
-            stats::dmultinom(unlist(c(AtomNumber["Si"]-sum(Current.Combinations[i,8:9]),Current.Combinations[i,8:9])), AtomNumber["Si"], SiliconNaturalAbundace)*
+            stats::dmultinom(unlist(c(AtomNumber["S"]-sum(Current.Combinations[i,6:7]),Current.Combinations[i,6:7])), AtomNumber["S"], SulfurNaturalAbundance)*
+            stats::dmultinom(unlist(c(AtomNumber["Si"]-sum(Current.Combinations[i,8:9]),Current.Combinations[i,8:9])), AtomNumber["Si"], SiliconNaturalAbundance)*
             stats::dbinom(Current.Combinations[i,10], AtomNumber["Cl"], ChlorineNaturalAbundance[2])*
             stats::dbinom(Current.Combinations[i,11], AtomNumber["Br"], BromineNaturalAbundance[2])
           for (n in m:nrow(NonTracerMatrix)){
@@ -370,10 +370,10 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
       for (i in 1:nrow(Current.Combinations)){
         Cindex<- Current.Combinations[i,1]
         Nindex<- Current.Combinations[i,2]
-        p <- stats::dbinom(Current.Combinations[i,3], AtomNumber["H"], HydrogenNaturalAbundace[2])*
+        p <- stats::dbinom(Current.Combinations[i,3], AtomNumber["H"], HydrogenNaturalAbundance[2])*
           stats::dmultinom(unlist(c(AtomNumber["O"]-sum(Current.Combinations[i,4:5]),Current.Combinations[i,4:5])), AtomNumber["O"], OxygenNaturalAbundace)*
-          stats::dmultinom(unlist(c(AtomNumber["S"]-sum(Current.Combinations[i,6:7]),Current.Combinations[i,6:7])), AtomNumber["S"], SulfurNaturalAbundace)*
-          stats::dmultinom(unlist(c(AtomNumber["Si"]-sum(Current.Combinations[i,8:9]),Current.Combinations[i,8:9])), AtomNumber["Si"], SiliconNaturalAbundace)*
+          stats::dmultinom(unlist(c(AtomNumber["S"]-sum(Current.Combinations[i,6:7]),Current.Combinations[i,6:7])), AtomNumber["S"], SulfurNaturalAbundance)*
+          stats::dmultinom(unlist(c(AtomNumber["Si"]-sum(Current.Combinations[i,8:9]),Current.Combinations[i,8:9])), AtomNumber["Si"], SiliconNaturalAbundance)*
           stats::dbinom(Current.Combinations[i,10], AtomNumber["Cl"], ChlorineNaturalAbundance[2])*
           stats::dbinom(Current.Combinations[i,11], AtomNumber["Br"], BromineNaturalAbundance[2])
         if (Cindex<Nindex){
@@ -424,13 +424,13 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
 #' @param Isotopes String that specify the type of tracer isotopes, "CN" or "CH"
 #' @param Resolution For Exactive, the Resolution is 100000, defined at Mw 200
 #' @param Autofill default: FALSE. If the intensity of an isotopologue is not provided, should 0 be assumed?
-#' @param CarbonNaturalAbundace
-#' @param HydrogenNaturalAbundace
-#' @param NitrogenNaturalAbundace
-#' @param SulfurNaturalAbundace
-#' @param SiliconNaturalAbundace
-#' @param ChlorineNaturalAbundance
-#' @param BromineNaturalAbundance
+#' @param CarbonNaturalAbundance vector of C Natural Abundance in the order of (12C,13C)
+#' @param HydrogenNaturalAbundance vector of H Natural Abundance in the order of (1H,2H)
+#' @param NitrogenNaturalAbundance vector of N Natural Abundance in the order of (14N,15N)
+#' @param SulfurNaturalAbundance vector of S Natural Abundance in the order of (32S,33S,34S)
+#' @param SiliconNaturalAbundance vector of Si Natural Abundance in the order of (28Si,29Si,30Si)
+#' @param ChlorineNaturalAbundance vector of Cl Natural Abundance in the order of (35Cl,37Cl)
+#' @param BromineNaturalAbundance vector of Br Natural Abundance in the order of (79Br,81Br)
 #' @param C13Purity default:0.99.The isotopic purity for C13 tracer.
 #' @param H2N15Purity default:0.99. The isotopic purity for H2/N15 tracer. 
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
@@ -447,12 +447,12 @@ dual_correction <- function(InputFile,
                           Isotopes,
                           Resolution = 100000,
                           Autofill = F,
-                          CarbonNaturalAbundace = c(0.9893, 0.0107),
-                          HydrogenNaturalAbundace = c(0.999885, 0.000115),
-                          NitrogenNaturalAbundace = c(0.99636, 0.00364),
+                          CarbonNaturalAbundance = c(0.9893, 0.0107),
+                          HydrogenNaturalAbundance = c(0.999885, 0.000115),
+                          NitrogenNaturalAbundance = c(0.99636, 0.00364),
                           OxygenNaturalAbundace = c(0.99757, 0.00038, 0.00205),
-                          SulfurNaturalAbundace = c(0.95, 0.0075, 0.0425),
-                          SiliconNaturalAbundace = c(0.92223, 0.04685, 0.03092),
+                          SulfurNaturalAbundance = c(0.95, 0.0075, 0.0425),
+                          SiliconNaturalAbundance = c(0.92223, 0.04685, 0.03092),
                           ChlorineNaturalAbundance = c(0.7576,0.2424),
                           BromineNaturalAbundance = c(0.5069,0.4931),
                           C13Purity = 0.99,
@@ -488,24 +488,24 @@ dual_correction <- function(InputFile,
     DataMatrix <- as.matrix(CurrentMetabolite[,6:(ncol(CurrentMetabolite))])
     if (Isotopes=="CH"){
       Corrected.raw <- CH_Correction(Formula, DataMatrix, CurrentMetabolite[,3:4],Resolution=Resolution,Charge = Charge, Autofill = Autofill, 
-                                     CarbonNaturalAbundace = CarbonNaturalAbundace,
-                                     HydrogenNaturalAbundace = HydrogenNaturalAbundace,
-                                     NitrogenNaturalAbundace = NitrogenNaturalAbundace,
+                                     CarbonNaturalAbundance = CarbonNaturalAbundance,
+                                     HydrogenNaturalAbundance = HydrogenNaturalAbundance,
+                                     NitrogenNaturalAbundance = NitrogenNaturalAbundance,
                                      OxygenNaturalAbundace = OxygenNaturalAbundace,
-                                     SulfurNaturalAbundace = SulfurNaturalAbundace,
-                                     SiliconNaturalAbundace = SiliconNaturalAbundace,
+                                     SulfurNaturalAbundance = SulfurNaturalAbundance,
+                                     SiliconNaturalAbundance = SiliconNaturalAbundance,
                                      ChlorineNaturalAbundance = ChlorineNaturalAbundance,
                                      BromineNaturalAbundance = BromineNaturalAbundance,
                                      C13Purity = C13Purity,
                                      H2N15Purity = H2N15Purity,
                                      ResDefAt = ResDefAt)
     } else if (Isotopes=="CN"){
-      Corrected.raw <- CN_Correction(Formula, DataMatrix, CurrentMetabolite[,3:4],Resolution=Resolution,Charge = Charge, Autofill = Autofill,CarbonNaturalAbundace = CarbonNaturalAbundace,
-                                     HydrogenNaturalAbundace = HydrogenNaturalAbundace,
-                                     NitrogenNaturalAbundace = NitrogenNaturalAbundace,
+      Corrected.raw <- CN_Correction(Formula, DataMatrix, CurrentMetabolite[,3:4],Resolution=Resolution,Charge = Charge, Autofill = Autofill,CarbonNaturalAbundance = CarbonNaturalAbundance,
+                                     HydrogenNaturalAbundance = HydrogenNaturalAbundance,
+                                     NitrogenNaturalAbundance = NitrogenNaturalAbundance,
                                      OxygenNaturalAbundace = OxygenNaturalAbundace,
-                                     SulfurNaturalAbundace = SulfurNaturalAbundace,
-                                     SiliconNaturalAbundace = SiliconNaturalAbundace,
+                                     SulfurNaturalAbundance = SulfurNaturalAbundance,
+                                     SiliconNaturalAbundance = SiliconNaturalAbundance,
                                      ChlorineNaturalAbundance = ChlorineNaturalAbundance,
                                      BromineNaturalAbundance = BromineNaturalAbundance,
                                      C13Purity = C13Purity,
