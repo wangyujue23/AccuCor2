@@ -560,14 +560,10 @@ dual_correction <- function(InputFile,
                            "Normalized" = OutputPercentageDF,
                            "Pool size" = OutputPoolAfterDF)
   
-  if(!identical(FALSE, output_base)) {
-    if(is.null(output_base)) {
-      output_base = path
-    }
-    write.xlsx2(OutputDF, file=InputFile, sheetName = "Corrected", row.names=FALSE, append=TRUE)
-    write.xlsx2(OutputPercentageDF, file=InputFile, sheetName = "Normalized", row.names=FALSE, append=TRUE)
-    write.xlsx2(OutputPoolAfterDF, file=InputFile, sheetName = "Pool Size", row.names=FALSE, append=TRUE)
-  }
+  
+  write.xlsx2(OutputDF, file=InputFile, sheetName = "Corrected", row.names=FALSE, append=TRUE)
+  write.xlsx2(OutputPercentageDF, file=InputFile, sheetName = "Normalized", row.names=FALSE, append=TRUE)
+  write.xlsx2(OutputPoolAfterDF, file=InputFile, sheetName = "Pool Size", row.names=FALSE, append=TRUE)
   
   return(OutputDataFrames)
 }
