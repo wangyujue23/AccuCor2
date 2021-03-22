@@ -12,7 +12,7 @@ Download [R](https://www.r-project.org/) to install accucor2.
 # Please make sure all the required packages are updated.
 install.packages("devtools")
 library(devtools)
-devtools::install_github("wangyujue23/AccuCor2")
+devtools::install_github("wangyujue23/AccuCor2",INSTALL_opts = "--no-multiarch")
 ```
 
 ## Usage
