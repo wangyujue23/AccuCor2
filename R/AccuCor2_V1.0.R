@@ -553,11 +553,11 @@ dual_correction <- function(InputFile,
                            "Pool size" = OutputPoolAfterDF)
   new_filename<-paste("Corrected_",format(Sys.time(),"%Y%m%d_%H%M%S"),".xlsx",sep = "")
   
-  xlsx::write.xlsx2(InputDF, "new_filename", sheetName = "Original", row.names=FALSE, append=TRUE)
-  xlsx::write.xlsx2(OutputDF, "new_filename", sheetName = "Corrected", row.names=FALSE, append=TRUE)
-  xlsx::write.xlsx2(OutputPercentageDF, "new_filename", sheetName = "Normalized", row.names=FALSE, append=TRUE)
-  xlsx::write.xlsx2(OutputPoolAfterDF, "new_filename", sheetName = "Pool Size", row.names=FALSE, append=TRUE)
-  print(paste("Correction is sussessful, the result is saved in ",getwd(),"/new_filename",sep = ""))
+  xlsx::write.xlsx2(InputDF, new_filename, sheetName = "Original", row.names=FALSE, append=TRUE)
+  xlsx::write.xlsx2(OutputDF,new_filename, sheetName = "Corrected", row.names=FALSE, append=TRUE)
+  xlsx::write.xlsx2(OutputPercentageDF, new_filename, sheetName = "Normalized", row.names=FALSE, append=TRUE)
+  xlsx::write.xlsx2(OutputPoolAfterDF, new_filename, sheetName = "Pool Size", row.names=FALSE, append=TRUE)
+  print(paste("Correction is sussessful, the result is saved in ",getwd(),"/",new_filename,sep = ""))
   return(OutputDataFrames)
 }
 
