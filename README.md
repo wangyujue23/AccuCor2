@@ -23,6 +23,7 @@ library(accucor2)
 # Example for 13C-15N tracer data:
 # Input file and the Sheet name (example file included)
 # Or use your own: input_file <- "/path/to/my/datafile.xlsx"
+# You may use the example files in the "inst/extdata" folder as a template to format your own data.
 
 input_file <- system.file("extdata", "CN_Compound_Test.xlsx", package = "accucor2")
 sheet_name <- "Sheet1"
@@ -30,7 +31,7 @@ metabolite_list <-system.file("extdata", "Metabolite Formula and Charge Info.csv
 
 # Be sure to specify the appropriate resolution.
 # For Exactive, the resolution is 70000, defined at 200 Mw
-# Output is written into "corrected.xlsx" under the directory folder by default (a message will show you where it is)
+# Output is written into "corrected_[time].xlsx" under the directory folder by default (a message will show you where it is)
 # The results are also returned as a named list of dataframes for further processing in R
 # "Original", "Corrected", "Normalized", "Pool size"
 
