@@ -62,3 +62,24 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 Please make sure to update tests as appropriate.
 
 ## License
+
+## Potential problem and solution
+Error:
+```R
+Warning in install.packages :
+  download of package ‘utf8’ failed
+```
+Solution:
+```R
+install.packages("utf8")
+```
+
+Error:
+```R
+Loading required package: usethis
+```
+Solution:
+```R
+install.packages("usethis")
+library(usethis)
+```
