@@ -435,7 +435,6 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
 #' @param H2N15Purity default:0.99. The isotopic purity for H2/N15 tracer. 
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
 #' @param ReportPoolSize default: TRUE
-#' @importFrom xlsx "read.xlsx" "write.xlsx2"
 #' @importFrom dplyr "filter"
 #' @importFrom gdata "startsWith"
 #' @return New excel sheet named: 'Corrected', 'Normalized', 'Pool size' added to the original excel file.
@@ -461,7 +460,7 @@ dual_correction <- function(InputFile,
                           ReportPoolSize = TRUE){
   
   MetaboliteList <- read.csv(MetaboliteListName, header = TRUE, check.names = FALSE,stringsAsFactors=FALSE)
-  InputDF <- xlsx::read.xlsx(InputFile, InputSheetName, header = TRUE, check.names=FALSE, stringsAsFactors=FALSE)
+  InputDF <- readxl::read_xlsx(path = InputFile, sheet = InputSheetName, col_names = TRUE)
   InputDF[,1] <- as.character(InputDF[,1])
   OutputMatrix <- matrix(0, ncol=(ncol(InputDF)-5), nrow=0)
   OutputPercentageMatrix <- matrix(0, ncol=(ncol(InputDF)-5), nrow=0)
@@ -553,10 +552,12 @@ dual_correction <- function(InputFile,
                            "Pool size" = OutputPoolAfterDF)
   new_filename<-paste("Corrected_",format(Sys.time(),"%Y%m%d_%H%M%S"),".xlsx",sep = "")
   
-  xlsx::write.xlsx2(InputDF, new_filename, sheetName = "Original", row.names=FALSE, append=TRUE)
-  xlsx::write.xlsx2(OutputDF,new_filename, sheetName = "Corrected", row.names=FALSE, append=TRUE)
-  xlsx::write.xlsx2(OutputPercentageDF, new_filename, sheetName = "Normalized", row.names=FALSE, append=TRUE)
-  xlsx::write.xlsx2(OutputPoolAfterDF, new_filename, sheetName = "Pool Size", row.names=FALSE, append=TRUE)
+  writexl::write_xlsx(x = list(
+    "Original" = InputDF,
+    "Corrected" = OutputDF,
+    "Normalized" = OutputPercentageDF,
+    "Pool Size" = OutputPoolAfterDF),
+    path = new_filename, col_names = FALSE)
   print(paste("Correction is sussessful, the result is saved in ",getwd(),"/",new_filename,sep = ""))
   return(OutputDataFrames)
 }
