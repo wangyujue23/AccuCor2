@@ -250,6 +250,8 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
   }
   AtomNumber <- rep(0,9)
   names(AtomNumber) <- c("C","H","N","O","P","S","Si","Cl","Br")
+  # Required to ensure the "thermo" object is created and defaults are used
+  suppressMessages(CHNOSZ::reset())
   AtomicComposition <- CHNOSZ::makeup(formula)
   # adjust the H# according to the charge
   AtomicComposition["H"]<-AtomicComposition["H"]+Charge
@@ -461,7 +463,6 @@ dual_correction <- function(InputFile,
   
   MetaboliteList <- read.csv(MetaboliteListName, header = TRUE, check.names = FALSE,stringsAsFactors=FALSE)
   InputDF <- readxl::read_xlsx(path = InputFile, sheet = InputSheetName, col_names = TRUE)
-  InputDF[,1] <- as.character(InputDF[,1])
   OutputMatrix <- matrix(0, ncol=(ncol(InputDF)-5), nrow=0)
   OutputPercentageMatrix <- matrix(0, ncol=(ncol(InputDF)-5), nrow=0)
   OutputPoolBefore <- matrix(0, ncol=(ncol(InputDF)-5), nrow=0)
@@ -471,8 +472,9 @@ dual_correction <- function(InputFile,
   OutputPoolCompound <- NULL
   names(InputDF)[1] <- "Compound"
   
+  # TODO Use dplyr::filter to remove rows 
   for (i in 1:nrow(InputDF)) {
-    if(gdata::startsWith(InputDF[i,1], "Unknown")) {InputDF[i,1] <- InputDF[i-1,1]}
+    if(gdata::startsWith(InputDF[[i,1]], "Unknown")) {InputDF[i,1] <- InputDF[i-1,1]}
   }
   
   for (i in unique(InputDF$Compound)) {
