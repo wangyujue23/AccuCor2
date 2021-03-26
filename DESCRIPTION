@@ -1,13 +1,12 @@
 Package: accucor2
 Type: Package
 Title: Natural Abundance Correction of Dual-Isotope Mass Spectrometer Data
-Version: 1.0.0.0
+Version: 0.1.9.9000
 Date: 2021-03-19
-Authors@R: as.person(c(
-    "Yujue Wang <yw429@rwjms.rutgers.edu> [aut, cre]",
-    "Xiaoyang Su <xs137@rwjms.rutgers.edu> [aut]",
-    "Lance Parsons <lparsons@princeton.edu> [aut]"
-  ))
+Authors@R: c(
+    person("Yujue", "Wang", email = "yw429@rwjms.rutgers.edu", role = c("aut", "cre")),
+    person("Xiaoyang", "Su", email = "xs137@rwjms.rutgers.edu", role = "aut"),
+    person("Lance", "Parsons", email = "lparsons@princeton.edu", role = "aut"))
 Description: AccuCor2 is an isotope natural abundance correction algorithm for dual-isotope experimental data. AccuCor2 supports 13C-2H and 13C-15N isotope correction.
 License: MIT + file LICENSE
 Encoding: UTF-8

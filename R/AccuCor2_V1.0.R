@@ -5,9 +5,11 @@
 #' @param label matrix that contains the number of isotopes (C followed by H) associated with the observed mass fractions
 #' @param Resolution For Exactive, the Resolution is 100000, defined at Mw 200
 #' @param Autofill default: FALSE. If the intensity of an isotopologue is not provided, should 0 be assumed?
+#' @param Charge default: -1
 #' @param CarbonNaturalAbundance vector of C Natural Abundance in the order of (12C,13C)
 #' @param HydrogenNaturalAbundance vector of H Natural Abundance in the order of (1H,2H)
 #' @param NitrogenNaturalAbundance vector of N Natural Abundance in the order of (14N,15N)
+#' @param OxygenNaturalAbundance vector of O Natural Abundance in the order of (??, ??, ??)
 #' @param SulfurNaturalAbundance vector of S Natural Abundance in the order of (32S,33S,34S)
 #' @param SiliconNaturalAbundance vector of Si Natural Abundance in the order of (28Si,29Si,30Si)
 #' @param ChlorineNaturalAbundance vector of Cl Natural Abundance in the order of (35Cl,37Cl)
@@ -15,7 +17,6 @@
 #' @param C13Purity default:0.99.The isotopic purity for C13 tracer.
 #' @param H2N15Purity default:0.99. The isotopic purity for H2/N15 tracer. 
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
-#' @param ReportPoolSize default: TRUE
 #' @importFrom nnls "nnls"
 #' @importFrom CHNOSZ "makeup"
 #' @importFrom stats "dbinom" "dmultinom" "coef"
@@ -27,7 +28,7 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
                           CarbonNaturalAbundance = c(0.9893, 0.0107),
                           HydrogenNaturalAbundance = c(0.999885, 0.000115),
                           NitrogenNaturalAbundance = c(0.99636, 0.00364),
-                          OxygenNaturalAbundace = c(0.99757, 0.00038, 0.00205),
+                          OxygenNaturalAbundance = c(0.99757, 0.00038, 0.00205),
                           SulfurNaturalAbundance = c(0.95, 0.0075, 0.0425),
                           SiliconNaturalAbundance = c(0.92223, 0.04685, 0.03092),
                           ChlorineNaturalAbundance = c(0.7576,0.2424),
@@ -142,7 +143,7 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
       if (nrow(Current.Combinations)!=0){
         for (i in 1:nrow(Current.Combinations)){
           p <- stats::dbinom(Current.Combinations[i,3], AtomNumber["N"], NitrogenNaturalAbundance[2])*
-            stats::dmultinom(unlist(c(AtomNumber["O"]-sum(Current.Combinations[i,4:5]),Current.Combinations[i,4:5])), AtomNumber["O"], OxygenNaturalAbundace)*
+            stats::dmultinom(unlist(c(AtomNumber["O"]-sum(Current.Combinations[i,4:5]),Current.Combinations[i,4:5])), AtomNumber["O"], OxygenNaturalAbundance)*
             stats::dmultinom(unlist(c(AtomNumber["S"]-sum(Current.Combinations[i,6:7]),Current.Combinations[i,6:7])), AtomNumber["S"], SulfurNaturalAbundance)*
             stats::dmultinom(unlist(c(AtomNumber["Si"]-sum(Current.Combinations[i,8:9]),Current.Combinations[i,8:9])), AtomNumber["Si"], SiliconNaturalAbundance)*
             stats::dbinom(Current.Combinations[i,10], AtomNumber["Cl"], ChlorineNaturalAbundance[2])*
@@ -162,7 +163,7 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
         Cindex<- Current.Combinations[i,1]
         Hindex<- Current.Combinations[i,2]
         p <- stats::dbinom(Current.Combinations[i,3], AtomNumber["N"], NitrogenNaturalAbundance[2])*
-          stats::dmultinom(unlist(c(AtomNumber["O"]-sum(Current.Combinations[i,4:5]),Current.Combinations[i,4:5])), AtomNumber["O"], OxygenNaturalAbundace)*
+          stats::dmultinom(unlist(c(AtomNumber["O"]-sum(Current.Combinations[i,4:5]),Current.Combinations[i,4:5])), AtomNumber["O"], OxygenNaturalAbundance)*
           stats::dmultinom(unlist(c(AtomNumber["S"]-sum(Current.Combinations[i,6:7]),Current.Combinations[i,6:7])), AtomNumber["S"], SulfurNaturalAbundance)*
           stats::dmultinom(unlist(c(AtomNumber["Si"]-sum(Current.Combinations[i,8:9]),Current.Combinations[i,8:9])), AtomNumber["Si"], SiliconNaturalAbundance)*
           stats::dbinom(Current.Combinations[i,10], AtomNumber["Cl"], ChlorineNaturalAbundance[2])*
@@ -214,9 +215,11 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
 #' @param label matrix that contains the number of isotopes (C followed by H) associated with the observed mass fractions
 #' @param Resolution For Exactive, the Resolution is 100000, defined at Mw 200
 #' @param Autofill default: FALSE. If the intensity of an isotopologue is not provided, should 0 be assumed?
+#' @param Charge default: -1
 #' @param CarbonNaturalAbundance vector of C Natural Abundance in the order of (12C,13C)
 #' @param HydrogenNaturalAbundance vector of H Natural Abundance in the order of (1H,2H)
 #' @param NitrogenNaturalAbundance vector of N Natural Abundance in the order of (14N,15N)
+#' @param OxygenNaturalAbundance vector of O Natural Abundance in the order of (??, ??, ??)
 #' @param SulfurNaturalAbundance vector of S Natural Abundance in the order of (32S,33S,34S)
 #' @param SiliconNaturalAbundance vector of Si Natural Abundance in the order of (28Si,29Si,30Si)
 #' @param ChlorineNaturalAbundance vector of Cl Natural Abundance in the order of (35Cl,37Cl)
@@ -224,7 +227,6 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
 #' @param C13Purity default:0.99.The isotopic purity for C13 tracer.
 #' @param H2N15Purity default:0.99. The isotopic purity for H2/N15 tracer. 
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
-#' @param ReportPoolSize default: TRUE
 #' @importFrom nnls "nnls"
 #' @importFrom CHNOSZ "makeup"
 #' @importFrom stats "dbinom" "dmultinom" "coef"
@@ -236,7 +238,7 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
                           CarbonNaturalAbundance = c(0.9893, 0.0107),
                           HydrogenNaturalAbundance = c(0.999885, 0.000115),
                           NitrogenNaturalAbundance = c(0.99636, 0.00364),
-                          OxygenNaturalAbundace = c(0.99757, 0.00038, 0.00205),
+                          OxygenNaturalAbundance = c(0.99757, 0.00038, 0.00205),
                           SulfurNaturalAbundance = c(0.95, 0.0075, 0.0425),
                           SiliconNaturalAbundance = c(0.92223, 0.04685, 0.03092),
                           ChlorineNaturalAbundance = c(0.7576,0.2424),
@@ -353,7 +355,7 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
       if (nrow(Current.Combinations)!=0){
         for (i in 1:nrow(Current.Combinations)){
           p <- stats::dbinom(Current.Combinations[i,3], AtomNumber["H"], HydrogenNaturalAbundance[2])*
-            stats::dmultinom(unlist(c(AtomNumber["O"]-sum(Current.Combinations[i,4:5]),Current.Combinations[i,4:5])), AtomNumber["O"], OxygenNaturalAbundace)*
+            stats::dmultinom(unlist(c(AtomNumber["O"]-sum(Current.Combinations[i,4:5]),Current.Combinations[i,4:5])), AtomNumber["O"], OxygenNaturalAbundance)*
             stats::dmultinom(unlist(c(AtomNumber["S"]-sum(Current.Combinations[i,6:7]),Current.Combinations[i,6:7])), AtomNumber["S"], SulfurNaturalAbundance)*
             stats::dmultinom(unlist(c(AtomNumber["Si"]-sum(Current.Combinations[i,8:9]),Current.Combinations[i,8:9])), AtomNumber["Si"], SiliconNaturalAbundance)*
             stats::dbinom(Current.Combinations[i,10], AtomNumber["Cl"], ChlorineNaturalAbundance[2])*
@@ -373,7 +375,7 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
         Cindex<- Current.Combinations[i,1]
         Nindex<- Current.Combinations[i,2]
         p <- stats::dbinom(Current.Combinations[i,3], AtomNumber["H"], HydrogenNaturalAbundance[2])*
-          stats::dmultinom(unlist(c(AtomNumber["O"]-sum(Current.Combinations[i,4:5]),Current.Combinations[i,4:5])), AtomNumber["O"], OxygenNaturalAbundace)*
+          stats::dmultinom(unlist(c(AtomNumber["O"]-sum(Current.Combinations[i,4:5]),Current.Combinations[i,4:5])), AtomNumber["O"], OxygenNaturalAbundance)*
           stats::dmultinom(unlist(c(AtomNumber["S"]-sum(Current.Combinations[i,6:7]),Current.Combinations[i,6:7])), AtomNumber["S"], SulfurNaturalAbundance)*
           stats::dmultinom(unlist(c(AtomNumber["Si"]-sum(Current.Combinations[i,8:9]),Current.Combinations[i,8:9])), AtomNumber["Si"], SiliconNaturalAbundance)*
           stats::dbinom(Current.Combinations[i,10], AtomNumber["Cl"], ChlorineNaturalAbundance[2])*
@@ -429,6 +431,7 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
 #' @param CarbonNaturalAbundance vector of C Natural Abundance in the order of (12C,13C)
 #' @param HydrogenNaturalAbundance vector of H Natural Abundance in the order of (1H,2H)
 #' @param NitrogenNaturalAbundance vector of N Natural Abundance in the order of (14N,15N)
+#' @param OxygenNaturalAbundance vector of O Natural Abundance in the order of (??, ??, ??)
 #' @param SulfurNaturalAbundance vector of S Natural Abundance in the order of (32S,33S,34S)
 #' @param SiliconNaturalAbundance vector of Si Natural Abundance in the order of (28Si,29Si,30Si)
 #' @param ChlorineNaturalAbundance vector of Cl Natural Abundance in the order of (35Cl,37Cl)
@@ -436,7 +439,6 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
 #' @param C13Purity default:0.99.The isotopic purity for C13 tracer.
 #' @param H2N15Purity default:0.99. The isotopic purity for H2/N15 tracer. 
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
-#' @param ReportPoolSize default: TRUE
 #' @importFrom dplyr "filter"
 #' @importFrom gdata "startsWith"
 #' @return New excel sheet named: 'Corrected', 'Normalized', 'Pool size' added to the original excel file.
@@ -451,15 +453,14 @@ dual_correction <- function(InputFile,
                           CarbonNaturalAbundance = c(0.9893, 0.0107),
                           HydrogenNaturalAbundance = c(0.999885, 0.000115),
                           NitrogenNaturalAbundance = c(0.99636, 0.00364),
-                          OxygenNaturalAbundace = c(0.99757, 0.00038, 0.00205),
+                          OxygenNaturalAbundance = c(0.99757, 0.00038, 0.00205),
                           SulfurNaturalAbundance = c(0.95, 0.0075, 0.0425),
                           SiliconNaturalAbundance = c(0.92223, 0.04685, 0.03092),
                           ChlorineNaturalAbundance = c(0.7576,0.2424),
                           BromineNaturalAbundance = c(0.5069,0.4931),
                           C13Purity = 0.99,
                           H2N15Purity = 0.99,
-                          ResDefAt = 200,
-                          ReportPoolSize = TRUE){
+                          ResDefAt = 200){
   
   MetaboliteList <- read.csv(MetaboliteListName, header = TRUE, check.names = FALSE,stringsAsFactors=FALSE)
   InputDF <- readxl::read_xlsx(path = InputFile, sheet = InputSheetName, col_names = TRUE)
@@ -492,7 +493,7 @@ dual_correction <- function(InputFile,
                                      CarbonNaturalAbundance = CarbonNaturalAbundance,
                                      HydrogenNaturalAbundance = HydrogenNaturalAbundance,
                                      NitrogenNaturalAbundance = NitrogenNaturalAbundance,
-                                     OxygenNaturalAbundace = OxygenNaturalAbundace,
+                                     OxygenNaturalAbundance = OxygenNaturalAbundance,
                                      SulfurNaturalAbundance = SulfurNaturalAbundance,
                                      SiliconNaturalAbundance = SiliconNaturalAbundance,
                                      ChlorineNaturalAbundance = ChlorineNaturalAbundance,
@@ -504,7 +505,7 @@ dual_correction <- function(InputFile,
       Corrected.raw <- CN_Correction(Formula, DataMatrix, CurrentMetabolite[,3:4],Resolution=Resolution,Charge = Charge, Autofill = Autofill,CarbonNaturalAbundance = CarbonNaturalAbundance,
                                      HydrogenNaturalAbundance = HydrogenNaturalAbundance,
                                      NitrogenNaturalAbundance = NitrogenNaturalAbundance,
-                                     OxygenNaturalAbundace = OxygenNaturalAbundace,
+                                     OxygenNaturalAbundance = OxygenNaturalAbundance,
                                      SulfurNaturalAbundance = SulfurNaturalAbundance,
                                      SiliconNaturalAbundance = SiliconNaturalAbundance,
                                      ChlorineNaturalAbundance = ChlorineNaturalAbundance,
