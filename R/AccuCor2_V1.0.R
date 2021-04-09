@@ -17,10 +17,7 @@
 #' @param C13Purity default:0.99.The isotopic purity for C13 tracer.
 #' @param H2N15Purity default:0.99. The isotopic purity for H2/N15 tracer. 
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
-#' @importFrom nnls "nnls"
-#' @importFrom CHNOSZ "makeup"
-#' @importFrom stats "dbinom" "dmultinom" "coef"
-#' @importFrom dplyr "%>%" "mutate" "filter"
+#' @importFrom dplyr "%>%"
 #' @return matrix of labeling pattern after the correction
 CH_Correction <- function(formula, datamatrix, label, Resolution, 
                           Autofill = F, 
@@ -118,19 +115,21 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
     }
     
     #Construct NonTracerMatrix  
-    Isotope.Combinations <- expand.grid(C13=c(0:AtomNumber["C"]),H2=c(0:AtomNumber["H"]),N15=c(0:AtomNumber["N"]),O17=c(0:AtomNumber["O"]),
-                                        O18=c(0:AtomNumber["O"]),S33=c(0:AtomNumber["S"]),S34=c(0:AtomNumber["S"]),
-                                        Si29=c(0:AtomNumber["Si"]),Si30=c(0:AtomNumber["Si"]),Cl37=c(0:AtomNumber["Cl"]),
-                                        Br81=c(0:AtomNumber["Br"]))
+    Isotope.Combinations <- expand.grid("C13"=c(0:AtomNumber["C"]),"H2"=c(0:AtomNumber["H"]),"N15"=c(0:AtomNumber["N"]),"O17"=c(0:AtomNumber["O"]),
+                                        "O18"=c(0:AtomNumber["O"]),"S33"=c(0:AtomNumber["S"]),"S34"=c(0:AtomNumber["S"]),
+                                        "Si29"=c(0:AtomNumber["Si"]),"Si30"=c(0:AtomNumber["Si"]),"Cl37"=c(0:AtomNumber["Cl"]),
+                                        "Br81"=c(0:AtomNumber["Br"]))
     
-    Isotope.Combinations1 <- Isotope.Combinations %>% dplyr::mutate(NonTracerMass=N15+O17+O18*2+S33+S34*2+Si29+Si30*2+Cl37*2+Br81*2) %>%
-      dplyr::filter((O17+O18)<=AtomNumber["O"] & (S33+S34)<=AtomNumber["S"] & (Si29+Si30)<=AtomNumber["Si"] & NonTracerMass<=(AtomNumber["C"]+AtomNumber["H"])) %>% filter((NonTracerMass==C13+H2))%>%
+    Isotope.Combinations1 <- Isotope.Combinations %>% 
+      dplyr::mutate(NonTracerMass=.data$N15+O17+O18*2+S33+S34*2+Si29+Si30*2+Cl37*2+Br81*2) %>%
+      dplyr::filter((O17+O18)<=AtomNumber["O"] & (S33+S34)<=AtomNumber["S"] & (Si29+Si30)<=AtomNumber["Si"] & NonTracerMass<=(AtomNumber["C"]+AtomNumber["H"])) %>% dplyr::filter((NonTracerMass==C13+H2))%>%
       dplyr::mutate(MassDiff=0.99703*N15+1.00422*O17+2.00425*O18+0.99939*S33+1.99580*S34+0.99957*Si29+1.99684*Si30+1.99705*Cl37+1.99796*Br81
              -1.00335*C13-1.00627*H2) %>%
       dplyr::filter(abs(MassDiff/Charge)<Mass.Limit)
     
-    Isotope.Combinations2 <- Isotope.Combinations %>% dplyr::mutate(NonTracerMass=N15+O17+O18*2+S33+S34*2+Si29+Si30*2+Cl37*2+Br81*2) %>%
-      dplyr::filter((O17+O18)<=AtomNumber["O"] & (S33+S34)<=AtomNumber["S"] & (Si29+Si30)<=AtomNumber["Si"] & NonTracerMass<=(AtomNumber["C"]+AtomNumber["H"])) %>% filter((NonTracerMass==abs(C13-H2))&(C13*H2*NonTracerMass>0))%>%
+    Isotope.Combinations2 <- Isotope.Combinations %>% 
+      dplyr::mutate(NonTracerMass=N15+O17+O18*2+S33+S34*2+Si29+Si30*2+Cl37*2+Br81*2) %>%
+      dplyr::filter((O17+O18)<=AtomNumber["O"] & (S33+S34)<=AtomNumber["S"] & (Si29+Si30)<=AtomNumber["Si"] & NonTracerMass<=(AtomNumber["C"]+AtomNumber["H"])) %>% dplyr::filter((NonTracerMass==abs(C13-H2))&(C13*H2*NonTracerMass>0))%>%
       dplyr::mutate(MassDiff=0.99703*N15+1.00422*O17+2.00425*O18+0.99939*S33+1.99580*S34+0.99957*Si29+1.99684*Si30+1.99705*Cl37+1.99796*Br81
              -abs(1.00335*C13-1.00627*H2)) %>%
       dplyr::filter(abs(MassDiff/Charge)<Mass.Limit)
@@ -227,10 +226,7 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
 #' @param C13Purity default:0.99.The isotopic purity for C13 tracer.
 #' @param H2N15Purity default:0.99. The isotopic purity for H2/N15 tracer. 
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
-#' @importFrom nnls "nnls"
-#' @importFrom CHNOSZ "makeup"
-#' @importFrom stats "dbinom" "dmultinom" "coef"
-#' @importFrom dplyr "%>%" "mutate" "filter"
+#' @importFrom dplyr "%>%" 
 #' @return matrix of labeling pattern after the correction
 CN_Correction <- function(formula, datamatrix, label, Resolution, 
                           Autofill = F, 
@@ -336,13 +332,13 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
                                         Br81=c(0:AtomNumber["Br"]))
     
     Isotope.Combinations1 <- Isotope.Combinations %>% dplyr::mutate(NonTracerMass=H2+O17+O18*2+S33+S34*2+Si29+Si30*2+Cl37*2+Br81*2) %>%
-      dplyr::filter((O17+O18)<=AtomNumber["O"] & (S33+S34)<=AtomNumber["S"] & (Si29+Si30)<=AtomNumber["Si"] & NonTracerMass<=(AtomNumber["C"]+AtomNumber["N"])) %>% filter((NonTracerMass==C13+N15))%>%
+      dplyr::filter((O17+O18)<=AtomNumber["O"] & (S33+S34)<=AtomNumber["S"] & (Si29+Si30)<=AtomNumber["Si"] & NonTracerMass<=(AtomNumber["C"]+AtomNumber["N"])) %>% dplyr::filter((NonTracerMass==C13+N15))%>%
       dplyr::mutate(MassDiff=1.00628*H2+1.00422*O17+2.00425*O18+0.99939*S33+1.99580*S34+0.99957*Si29+1.99684*Si30+1.99705*Cl37+1.99796*Br81
              -1.00335*C13-0.99703*N15) %>%
       dplyr::filter(abs(MassDiff/Charge)<Mass.Limit)
     
     Isotope.Combinations2 <- Isotope.Combinations %>% dplyr::mutate(NonTracerMass=H2+O17+O18*2+S33+S34*2+Si29+Si30*2+Cl37*2+Br81*2) %>%
-      dplyr::filter((O17+O18)<=AtomNumber["O"] & (S33+S34)<=AtomNumber["S"] & (Si29+Si30)<=AtomNumber["Si"] & NonTracerMass<=(AtomNumber["C"]+AtomNumber["N"])) %>% filter((NonTracerMass==abs(C13-N15))&(C13*N15*NonTracerMass>0))%>%
+      dplyr::filter((O17+O18)<=AtomNumber["O"] & (S33+S34)<=AtomNumber["S"] & (Si29+Si30)<=AtomNumber["Si"] & NonTracerMass<=(AtomNumber["C"]+AtomNumber["N"])) %>% dplyr::filter((NonTracerMass==abs(C13-N15))&(C13*N15*NonTracerMass>0))%>%
       dplyr::mutate(MassDiff=1.00628*H2+1.00422*O17+2.00425*O18+0.99939*S33+1.99580*S34+0.99957*Si29+1.99684*Si30+1.99705*Cl37+1.99796*Br81
              -abs(1.00335*C13-0.99703*N15)) %>%
       dplyr::filter(abs(MassDiff/Charge)<Mass.Limit)
@@ -439,8 +435,6 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
 #' @param C13Purity default:0.99.The isotopic purity for C13 tracer.
 #' @param H2N15Purity default:0.99. The isotopic purity for H2/N15 tracer. 
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
-#' @importFrom dplyr "filter"
-#' @importFrom gdata "startsWith"
 #' @return New excel sheet named: 'Corrected', 'Normalized', 'Pool size' added to the original excel file.
 #' @export
 
@@ -461,8 +455,8 @@ dual_correction <- function(InputFile,
                           C13Purity = 0.99,
                           H2N15Purity = 0.99,
                           ResDefAt = 200){
-  
-  MetaboliteList <- read.csv(MetaboliteListName, header = TRUE, check.names = FALSE,stringsAsFactors=FALSE)
+  # TODO Change to readr::read_csv for consistency
+  MetaboliteList <- utils::read.csv(MetaboliteListName, header = TRUE, check.names = FALSE,stringsAsFactors=FALSE)
   InputDF <- readxl::read_xlsx(path = InputFile, sheet = InputSheetName, col_names = TRUE)
   OutputMatrix <- matrix(0, ncol=(ncol(InputDF)-5), nrow=0)
   OutputPercentageMatrix <- matrix(0, ncol=(ncol(InputDF)-5), nrow=0)
@@ -548,6 +542,10 @@ dual_correction <- function(InputFile,
   names(OutputPoolBeforeDF) <- c("Compound", names(InputDF)[6:(length(names(InputDF)))])
   names(OutputPoolAfterDF) <- c("Compound", names(InputDF)[6:(length(names(InputDF)))])
   
+  InputDF <- dplyr::as_tibble(InputDF)
+  OutputDF <- dplyr::as_tibble(OutputDF)
+  OutputPercentageDF <- dplyr::as_tibble(OutputPercentageDF)
+  OutputPoolAfterDF <- dplyr::as_tibble(OutputPoolAfterDF)
   
   OutputDataFrames <- list("Original" = InputDF,
                            "Corrected" = OutputDF,
@@ -555,12 +553,7 @@ dual_correction <- function(InputFile,
                            "Pool size" = OutputPoolAfterDF)
   new_filename<-paste("Corrected_",format(Sys.time(),"%Y%m%d_%H%M%S"),".xlsx",sep = "")
   
-  writexl::write_xlsx(x = list(
-    "Original" = InputDF,
-    "Corrected" = OutputDF,
-    "Normalized" = OutputPercentageDF,
-    "Pool Size" = OutputPoolAfterDF),
-    path = new_filename, col_names = FALSE)
+  writexl::write_xlsx(x = OutputDataFrames, path = new_filename)
   print(paste("Correction is sussessful, the result is saved in ",getwd(),"/",new_filename,sep = ""))
   return(OutputDataFrames)
 }

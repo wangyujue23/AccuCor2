@@ -8,8 +8,8 @@ read_expected <- function(file, sheet) {
                                as.integer)
 }
 
-test_that("Carbon correction (Excel, simple format)", {
-  resolution <- 100000
+test_that("CN correction", {
+  resolution <- 70000
   input_file <- system.file("extdata", 
                             "CN_Compound_Test.xlsx", 
                             package = "accucor2")
@@ -23,29 +23,59 @@ test_that("Carbon correction (Excel, simple format)", {
     sheet_name,
     metabolite_list,
     "CN",
-    Resolution = 70000)
+    Resolution = resolution)
   
-  # Does not test contents, just that we got something of length 4
-  # TODO Update to test contents of `corrected`
-  expect_equal(length(corrected), 4)
-  
-  # 
-  # expected_output <- list(
-  #   "Original" = read_expected(
-  #     system.file("extdata", "C_Sample_Input_Simple.xlsx", package = "accucor2"),
-  #     sheet = 1),
-  #   "Corrected" = read_expected(
-  #     system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor2"),
-  #     sheet = "Corrected"),
-  #   "Normalized" = read_expected(
-  #     system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor2"),
-  #     sheet = "Normalized"),
-  #   "PoolAfterDF" = read_expected(
-  #     system.file("extdata", "C_Sample_Input_Simple_corrected.xlsx", package = "accucor2"),
-  #     sheet = "PoolAfterDF")
-  # )
-  # 
-  # expect_equal(corrected, expected_output)
+  expected_output <- list(
+    "Original" = read_expected(
+      system.file("extdata", "CN_Compound_Test_corrected.xlsx", package = "accucor2"),
+      sheet = "Original"),
+    "Corrected" = read_expected(
+      system.file("extdata", "CN_Compound_Test_corrected.xlsx", package = "accucor2"),
+      sheet = "Corrected"),
+    "Normalized" = read_expected(
+      system.file("extdata", "CN_Compound_Test_corrected.xlsx", package = "accucor2"),
+      sheet = "Normalized"),
+    "Pool size" = read_expected(
+      system.file("extdata", "CN_Compound_Test_corrected.xlsx", package = "accucor2"),
+      sheet = "Pool size")
+  )
+
+  expect_equal(corrected, expected_output)
+})
+
+test_that("CH correction", {
+  resolution <- 750000
+  input_file <- system.file("extdata",
+                            "CH_Compound_Test.xlsx",
+                            package = "accucor2")
+  sheet_name <- "Sheet1"
+  metabolite_list <-system.file("extdata",
+                                "metabolite_formula_and_charge_info.csv",
+                                package = "accucor2")
+
+  corrected <- dual_correction(
+    input_file,
+    sheet_name,
+    metabolite_list,
+    "CH",
+    Resolution = resolution)
+
+  expected_output <- list(
+    "Original" = read_expected(
+      system.file("extdata", "CH_Compound_Test_corrected.xlsx", package = "accucor2"),
+      sheet = "Original"),
+    "Corrected" = read_expected(
+      system.file("extdata", "CH_Compound_Test_corrected.xlsx", package = "accucor2"),
+      sheet = "Corrected"),
+    "Normalized" = read_expected(
+      system.file("extdata", "CH_Compound_Test_corrected.xlsx", package = "accucor2"),
+      sheet = "Normalized"),
+    "Pool size" = read_expected(
+      system.file("extdata", "CH_Compound_Test_corrected.xlsx", package = "accucor2"),
+      sheet = "Pool size")
+  )
+
+  expect_equal(corrected, expected_output)
 })
 
 # Other possible tests
