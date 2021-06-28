@@ -11,15 +11,12 @@ Description: AccuCor2 is an isotope natural abundance correction algorithm for d
 License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:
-    gsubfn,
     nnls,
     dplyr,
     gdata,
-    stringr,
     readxl,
     readr,
     rlang,
-    tibble,
     writexl,
     CHNOSZ
 RoxygenNote: 7.1.1
