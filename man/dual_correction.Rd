@@ -14,7 +14,7 @@ dual_correction(
   CarbonNaturalAbundance = c(0.9893, 0.0107),
   HydrogenNaturalAbundance = c(0.999885, 0.000115),
   NitrogenNaturalAbundance = c(0.99636, 0.00364),
-  OxygenNaturalAbundace = c(0.99757, 0.00038, 0.00205),
+  OxygenNaturalAbundance = c(0.99757, 0.00038, 0.00205),
   SulfurNaturalAbundance = c(0.95, 0.0075, 0.0425),
   SiliconNaturalAbundance = c(0.92223, 0.04685, 0.03092),
   ChlorineNaturalAbundance = c(0.7576, 0.2424),
@@ -22,7 +22,8 @@ dual_correction(
   C13Purity = 0.99,
   H2N15Purity = 0.99,
   ResDefAt = 200,
-  ReportPoolSize = TRUE
+  output_base = NULL,
+  output_filetype = "xlsx"
 )
 }
 \arguments{
@@ -44,6 +45,8 @@ dual_correction(
 
 \item{NitrogenNaturalAbundance}{vector of N Natural Abundance in the order of (14N,15N)}
 
+\item{OxygenNaturalAbundance}{vector of O Natural Abundance in the order of (??, ??, ??)}
+
 \item{SulfurNaturalAbundance}{vector of S Natural Abundance in the order of (32S,33S,34S)}
 
 \item{SiliconNaturalAbundance}{vector of Si Natural Abundance in the order of (28Si,29Si,30Si)}
@@ -58,7 +61,12 @@ dual_correction(
 
 \item{ResDefAt}{Resolution defined at (in Mw), e.g. 200 Mw}
 
-\item{ReportPoolSize}{default: TRUE}
+\item{output_base}{Path to basename of output file, default is the basename
+of the input path. `_corrected` will be appended. If `FALSE` then no
+output file is written.}
+
+\item{output_filetype}{Filetype of the output file, one of: 'xls', xlsx',
+'csv', or 'tsv'. The default is 'xlsx'.}
 }
 \value{
 New excel sheet named: 'Corrected', 'Normalized', 'Pool size' added to the original excel file.
