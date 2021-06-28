@@ -1,5 +1,9 @@
 # AccuCor2 - Isotope Natural Abundance Correction for dual-isotope data
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/wangyujue23/AccuCor2/workflows/R-CMD-check/badge.svg)](https://github.com/wangyujue23/AccuCor2/actions)
+<!-- badges: end -->
+
 AccuCor2 is an isotope natural abundance correction algorithm for dual-isotope experimental data. AccuCor2 supports 13C-2H and 13C-15N isotope correction.
 
 AccuCor2 accepts Excel (.xls and .xlsx) files.

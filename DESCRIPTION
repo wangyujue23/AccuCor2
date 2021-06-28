@@ -10,7 +10,6 @@ Authors@R: c(
 Description: AccuCor2 is an isotope natural abundance correction algorithm for dual-isotope experimental data. AccuCor2 supports 13C-2H and 13C-15N isotope correction.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 Imports:
     gsubfn,
     nnls,

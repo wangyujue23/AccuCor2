@@ -21,7 +21,9 @@ dual_correction(
   BromineNaturalAbundance = c(0.5069, 0.4931),
   C13Purity = 0.99,
   H2N15Purity = 0.99,
-  ResDefAt = 200
+  ResDefAt = 200,
+  output_base = NULL,
+  output_filetype = "xlsx"
 )
 }
 \arguments{
@@ -58,6 +60,13 @@ dual_correction(
 \item{H2N15Purity}{default:0.99. The isotopic purity for H2/N15 tracer.}
 
 \item{ResDefAt}{Resolution defined at (in Mw), e.g. 200 Mw}
+
+\item{output_base}{Path to basename of output file, default is the basename
+of the input path. `_corrected` will be appended. If `FALSE` then no
+output file is written.}
+
+\item{output_filetype}{Filetype of the output file, one of: 'xls', xlsx',
+'csv', or 'tsv'. The default is 'xlsx'.}
 }
 \value{
 New excel sheet named: 'Corrected', 'Normalized', 'Pool size' added to the original excel file.
