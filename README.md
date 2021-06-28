@@ -27,7 +27,7 @@ library(accucor2)
 
 input_file <- system.file("extdata", "CN_Compound_Test.xlsx", package = "accucor2")
 sheet_name <- "Sheet1"
-metabolite_list <-system.file("extdata", "Metabolite Formula and Charge Info.csv", package = "accucor2")
+metabolite_list <-system.file("extdata", "metabolite_formula_and_charge_info.csv", package = "accucor2")
 
 # Be sure to specify the appropriate resolution.
 # For Exactive, the resolution is 70000, defined at 200 Mw

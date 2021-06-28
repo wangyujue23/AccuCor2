@@ -14,7 +14,7 @@ CN_Correction(
   CarbonNaturalAbundance = c(0.9893, 0.0107),
   HydrogenNaturalAbundance = c(0.999885, 0.000115),
   NitrogenNaturalAbundance = c(0.99636, 0.00364),
-  OxygenNaturalAbundace = c(0.99757, 0.00038, 0.00205),
+  OxygenNaturalAbundance = c(0.99757, 0.00038, 0.00205),
   SulfurNaturalAbundance = c(0.95, 0.0075, 0.0425),
   SiliconNaturalAbundance = c(0.92223, 0.04685, 0.03092),
   ChlorineNaturalAbundance = c(0.7576, 0.2424),
@@ -35,11 +35,15 @@ CN_Correction(
 
 \item{Autofill}{default: FALSE. If the intensity of an isotopologue is not provided, should 0 be assumed?}
 
+\item{Charge}{default: -1}
+
 \item{CarbonNaturalAbundance}{vector of C Natural Abundance in the order of (12C,13C)}
 
 \item{HydrogenNaturalAbundance}{vector of H Natural Abundance in the order of (1H,2H)}
 
 \item{NitrogenNaturalAbundance}{vector of N Natural Abundance in the order of (14N,15N)}
+
+\item{OxygenNaturalAbundance}{vector of O Natural Abundance in the order of (??, ??, ??)}
 
 \item{SulfurNaturalAbundance}{vector of S Natural Abundance in the order of (32S,33S,34S)}
 
@@ -54,8 +58,6 @@ CN_Correction(
 \item{H2N15Purity}{default:0.99. The isotopic purity for H2/N15 tracer.}
 
 \item{ResDefAt}{Resolution defined at (in Mw), e.g. 200 Mw}
-
-\item{ReportPoolSize}{default: TRUE}
 }
 \value{
 matrix of labeling pattern after the correction
