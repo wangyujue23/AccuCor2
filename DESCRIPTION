@@ -25,3 +25,4 @@ Imports:
     CHNOSZ
 RoxygenNote: 7.1.1
 Suggests: testthat
+Config/testthat/edition: 3

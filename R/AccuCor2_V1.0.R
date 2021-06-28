@@ -435,6 +435,11 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
 #' @param C13Purity default:0.99.The isotopic purity for C13 tracer.
 #' @param H2N15Purity default:0.99. The isotopic purity for H2/N15 tracer. 
 #' @param ResDefAt Resolution defined at (in Mw), e.g. 200 Mw
+#' @param output_base Path to basename of output file, default is the basename
+#'   of the input path. `_corrected` will be appended. If `FALSE` then no
+#'   output file is written.
+#' @param output_filetype Filetype of the output file, one of: 'xls', xlsx',
+#'   'csv', or 'tsv'. The default is 'xlsx'.
 #' @return New excel sheet named: 'Corrected', 'Normalized', 'Pool size' added to the original excel file.
 #' @export
 
@@ -454,7 +459,9 @@ dual_correction <- function(InputFile,
                           BromineNaturalAbundance = c(0.5069,0.4931),
                           C13Purity = 0.99,
                           H2N15Purity = 0.99,
-                          ResDefAt = 200){
+                          ResDefAt = 200,
+                          output_base = NULL,
+                          output_filetype = 'xlsx'){
   # TODO Change to readr::read_csv for consistency
   MetaboliteList <- utils::read.csv(MetaboliteListName, header = TRUE, check.names = FALSE,stringsAsFactors=FALSE)
   InputDF <- readxl::read_xlsx(path = InputFile, sheet = InputSheetName, col_names = TRUE)
@@ -551,10 +558,14 @@ dual_correction <- function(InputFile,
                            "Corrected" = OutputDF,
                            "Normalized" = OutputPercentageDF,
                            "Pool size" = OutputPoolAfterDF)
-  new_filename<-paste("Corrected_",format(Sys.time(),"%Y%m%d_%H%M%S"),".xlsx",sep = "")
   
-  writexl::write_xlsx(x = OutputDataFrames, path = new_filename)
-  print(paste("Correction is sussessful, the result is saved in ",getwd(),"/",new_filename,sep = ""))
+  if(!identical(FALSE, output_base)) {
+    if(is.null(output_base)) {
+      output_base = InputFile
+    }
+    write_output(OutputDataFrames, output_base, filetype = output_filetype)
+  }
+  
   return(OutputDataFrames)
 }
 
