@@ -35,11 +35,6 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
                           C13Purity = 0.99,
                           H2N15Purity = 0.99,
                           ResDefAt = 200) {
-  # ignore the data with only the parent isotopologous
-  if (nrow(label)==1 & sum(label[1,])==0){
-    CorrectedMatrix<-datamatrix
-    return(CorrectedMatrix)
-  }
   if (Charge == 0){
     print("Charge cannot be 0, replaced with -1")
     Charge <- -1
@@ -59,14 +54,16 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
   
   
   Mass.Difference<-(label$`13C#`)*1.00628+(label$`2H#`)*1.00335
-  for (i in 1:(length(Mass.Difference)-1)){
-    for (j in (i+1):length(Mass.Difference)){
-      if (Mass.Limit>abs((Mass.Difference[i]-Mass.Difference[j])/Charge)){
-        print(paste(compound,": 13C",label[i,1],"-2H",label[i,2]," is indistinguishable with 13C",label[j,1],"-2H",label[j,2]," under provided resolution, check your data again.",sep = ""))
+  if (nrow(label)>1){  # ignore the data with only the parent isotopologous
+    for (i in 1:(length(Mass.Difference)-1)){
+      for (j in (i+1):length(Mass.Difference)){
+        if (Mass.Limit>abs((Mass.Difference[i]-Mass.Difference[j])/Charge)){
+          print(paste(compound,": 13C",label[i,1],"-2H",label[i,2]," is indistinguishable with 13C",label[j,1],"-2H",label[j,2]," under provided resolution, check your data again.",sep = ""))
+        }
       }
     }
   }
-  
+
   CompleteLabel<-expand.grid(C13=c(0:AtomNumber["C"]),H2=c(0:AtomNumber["H"]))
   ExpMatrix <- matrix(0,ncol=ncol(datamatrix),nrow=nrow(CompleteLabel))
   LabelIndex <-c()
@@ -80,7 +77,7 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
   }
   CorrectedMatrix <- matrix(0, ncol=ncol(datamatrix), nrow=nrow(CompleteLabel))
   
-  if((AtomNumber["C"]+1)*(AtomNumber["H"]+1) < length(label)){
+  if((AtomNumber["C"]+1)*(AtomNumber["H"]+1) < nrow(label)){
     if (length(compound)!=0){
       print(paste(compound,":the number of labeling species exceeded the maximum allowed number of carbon and hydrogen isotopomers, check the input file."))
     } else{
@@ -201,11 +198,15 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
       CorrectedMatrix<-CorrectedMatrix[LabelIndex,]
       CompleteLabel<-CompleteLabel[LabelIndex,]
     }
-    
-    for(i in 1:ncol(CorrectedMatrix)) {
-      CorrectedMatrix[,i] <- stats::coef(nnls::nnls(NonTracerMatrix %*% 
-                                         CHMatrix %*% PurityMatrix, ExpMatrix[,i]))
+    if (nrow(label)>1){
+      for(i in 1:ncol(CorrectedMatrix)) {
+        CorrectedMatrix[,i] <- stats::coef(nnls::nnls(NonTracerMatrix %*% 
+                                                        CNMatrix %*% PurityMatrix, ExpMatrix[,i]))
+      }
+    }else{
+      CorrectedMatrix<-datamatrix
     }
+    colnames(CorrectedMatrix)<-colnames(datamatrix)
     CorrectedMatrix<-cbind(CompleteLabel,CorrectedMatrix)
     return(CorrectedMatrix)
   }
@@ -249,11 +250,6 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
                           C13Purity = 0.99,
                           H2N15Purity = 0.99,
                           ResDefAt = 200) {
-  # ignore the data with only the parent isotopologous
-  if (nrow(label)==1 & sum(label[1,])==0){
-    CorrectedMatrix<-datamatrix
-    return(CorrectedMatrix)
-  }
   if (Charge == 0){
     print("Charge cannot be 0, replaced with -1")
     Charge <- -1
@@ -275,10 +271,12 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
   
   
   Mass.Difference<-(label$`13C#`)*1.00628+(label$`15N#`)*0.99703
-  for (i in 1:(length(Mass.Difference)-1)){
-    for (j in (i+1):length(Mass.Difference)){
-      if (Mass.Limit>abs(Mass.Difference[i]-Mass.Difference[j])){
-        print(paste(compound,": 13C",label[i,1],"-15N",label[i,2]," is indistinguishable with 13C",label[j,1],"-15N",label[j,2]," under provided resolution, check your data again.",sep = ""))
+  if (nrow(label)>1){  # ignore the data with only the parent isotopologous
+    for (i in 1:(length(Mass.Difference)-1)){
+      for (j in (i+1):length(Mass.Difference)){
+        if (Mass.Limit>abs((Mass.Difference[i]-Mass.Difference[j])/Charge)){
+          print(paste(compound,": 13C",label[i,1],"-2H",label[i,2]," is indistinguishable with 13C",label[j,1],"-2H",label[j,2]," under provided resolution, check your data again.",sep = ""))
+        }
       }
     }
   }
@@ -296,7 +294,7 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
   }
   CorrectedMatrix <- matrix(0, ncol=ncol(datamatrix), nrow=nrow(CompleteLabel))
   
-  if((AtomNumber["C"]+1)*(AtomNumber["N"]+1) < length(label)){
+  if((AtomNumber["C"]+1)*(AtomNumber["N"]+1) < nrow(label)){
     if (length(compound)!=0){
       print(paste(compound,":the number of labeling species exceeded the maximum allowed number of carbon and Nitrogen isotopomers, check the input file."))
     } else{
@@ -417,11 +415,15 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
       CorrectedMatrix<-CorrectedMatrix[LabelIndex,]
       CompleteLabel<-CompleteLabel[LabelIndex,]
     }
-    
-    for(i in 1:ncol(CorrectedMatrix)) {
-      CorrectedMatrix[,i] <- stats::coef(nnls::nnls(NonTracerMatrix %*% 
-                                         CNMatrix %*% PurityMatrix, ExpMatrix[,i]))
+    if (nrow(label)>1){
+      for(i in 1:ncol(CorrectedMatrix)) {
+        CorrectedMatrix[,i] <- stats::coef(nnls::nnls(NonTracerMatrix %*% 
+                                                        CNMatrix %*% PurityMatrix, ExpMatrix[,i]))
+      }
+    }else{
+      CorrectedMatrix<-datamatrix
     }
+    colnames(CorrectedMatrix)<-colnames(datamatrix)
     CorrectedMatrix<-cbind(CompleteLabel,CorrectedMatrix)
     return(CorrectedMatrix)
   }
@@ -569,7 +571,7 @@ dual_correction <- function(InputFile,
     "Corrected" = OutputDF,
     "Normalized" = OutputPercentageDF,
     "Pool Size" = OutputPoolAfterDF),
-    path = new_filename, col_names = FALSE)
+    path = new_filename, col_names = T)
   print(paste("Correction is sussessful, the result is saved in ",getwd(),"/",new_filename,sep = ""))
   return(OutputDataFrames)
 }
