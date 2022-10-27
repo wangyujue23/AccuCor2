@@ -35,6 +35,11 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
                           C13Purity = 0.99,
                           H2N15Purity = 0.99,
                           ResDefAt = 200) {
+  # ignore the data with only the parent isotopologous
+  if (nrow(label)==1 & sum(label[1,])==0){
+    CorrectedMatrix<-datamatrix
+    return(CorrectedMatrix)
+  }
   if (Charge == 0){
     print("Charge cannot be 0, replaced with -1")
     Charge <- -1
@@ -244,6 +249,11 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
                           C13Purity = 0.99,
                           H2N15Purity = 0.99,
                           ResDefAt = 200) {
+  # ignore the data with only the parent isotopologous
+  if (nrow(label)==1 & sum(label[1,])==0){
+    CorrectedMatrix<-datamatrix
+    return(CorrectedMatrix)
+  }
   if (Charge == 0){
     print("Charge cannot be 0, replaced with -1")
     Charge <- -1
