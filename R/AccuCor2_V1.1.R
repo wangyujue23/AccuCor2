@@ -275,7 +275,7 @@ CN_Correction <- function(formula, datamatrix, label, Resolution,
     for (i in 1:(length(Mass.Difference)-1)){
       for (j in (i+1):length(Mass.Difference)){
         if (Mass.Limit>abs((Mass.Difference[i]-Mass.Difference[j])/Charge)){
-          print(paste(compound,": 13C",label[i,1],"-2H",label[i,2]," is indistinguishable with 13C",label[j,1],"-2H",label[j,2]," under provided resolution, check your data again.",sep = ""))
+          print(paste(compound,": 13C",label[i,1],"-15N",label[i,2]," is indistinguishable with 13C",label[j,1],"-15N",label[j,2]," under provided resolution, check your data again.",sep = ""))
         }
       }
     }
