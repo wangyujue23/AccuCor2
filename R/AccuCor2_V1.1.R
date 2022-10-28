@@ -201,7 +201,7 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
     if (nrow(label)>1){
       for(i in 1:ncol(CorrectedMatrix)) {
         CorrectedMatrix[,i] <- stats::coef(nnls::nnls(NonTracerMatrix %*% 
-                                                        CNMatrix %*% PurityMatrix, ExpMatrix[,i]))
+                                                        CHMatrix %*% PurityMatrix, ExpMatrix[,i]))
       }
     }else{
       CorrectedMatrix<-datamatrix
