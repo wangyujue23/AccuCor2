@@ -21,7 +21,7 @@
 #' @importFrom stats "dbinom" "dmultinom" "coef"
 #' @importFrom dplyr "%>%" "mutate" "filter"
 #' @return matrix of labeling pattern after the correction
-CH_Correction <- function(formula, datamatrix, label, Resolution, 
+CH_Correction <- function(formula, datamatrix, label, Resolution, compound,
                           Autofill = F, 
                           Charge = -1,
                           CarbonNaturalAbundance = c(0.9893, 0.0107),
@@ -236,7 +236,7 @@ CH_Correction <- function(formula, datamatrix, label, Resolution,
 #' @importFrom stats "dbinom" "dmultinom" "coef"
 #' @importFrom dplyr "%>%" "mutate" "filter"
 #' @return matrix of labeling pattern after the correction
-CN_Correction <- function(formula, datamatrix, label, Resolution, 
+CN_Correction <- function(formula, datamatrix, label, Resolution, compound,
                           Autofill = F, 
                           Charge = -1,
                           CarbonNaturalAbundance = c(0.9893, 0.0107),
@@ -500,7 +500,7 @@ dual_correction <- function(InputFile,
     CurrentMetabolite <- dplyr::filter(InputDF, Compound==i)
     DataMatrix <- as.matrix(CurrentMetabolite[,6:(ncol(CurrentMetabolite))])
     if (Isotopes=="CH"){
-      Corrected.raw <- CH_Correction(Formula, DataMatrix, CurrentMetabolite[,3:4],Resolution=Resolution,Charge = Charge, Autofill = Autofill, 
+      Corrected.raw <- CH_Correction(Formula, DataMatrix, CurrentMetabolite[,3:4],Resolution=Resolution, compound=compound, Charge = Charge, Autofill = Autofill, 
                                      CarbonNaturalAbundance = CarbonNaturalAbundance,
                                      HydrogenNaturalAbundance = HydrogenNaturalAbundance,
                                      NitrogenNaturalAbundance = NitrogenNaturalAbundance,
@@ -513,7 +513,7 @@ dual_correction <- function(InputFile,
                                      H2N15Purity = H2N15Purity,
                                      ResDefAt = ResDefAt)
     } else if (Isotopes=="CN"){
-      Corrected.raw <- CN_Correction(Formula, DataMatrix, CurrentMetabolite[,3:4],Resolution=Resolution,Charge = Charge, Autofill = Autofill,CarbonNaturalAbundance = CarbonNaturalAbundance,
+      Corrected.raw <- CN_Correction(Formula, DataMatrix, CurrentMetabolite[,3:4],Resolution=Resolution,compound=compound, Charge = Charge, Autofill = Autofill,CarbonNaturalAbundance = CarbonNaturalAbundance,
                                      HydrogenNaturalAbundance = HydrogenNaturalAbundance,
                                      NitrogenNaturalAbundance = NitrogenNaturalAbundance,
                                      OxygenNaturalAbundace = OxygenNaturalAbundace,
