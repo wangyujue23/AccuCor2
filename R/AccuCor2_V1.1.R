@@ -495,7 +495,7 @@ dual_correction <- function(InputFile,
     compound <- i
     if(length(Formula)==0) {
       print(paste("The formula of",i,"is unknown",sep=" "))
-      break
+      next
     }
     CurrentMetabolite <- dplyr::filter(InputDF, Compound==i)
     DataMatrix <- as.matrix(CurrentMetabolite[,6:(ncol(CurrentMetabolite))])
